@@ -40,17 +40,16 @@ class PokemonGoMITM
 
     @proxy.log 'error warn debug info', process.stdout
 
-    # @proxy.intercept
-    #   phase: 'request'
-    #   as: 'buffer'
-    #   @handleAppRequest
+    @proxy.intercept
+      phase: 'request'
+      as: 'buffer'
+      @handleAppRequest
+    
     @proxy.intercept phase: 'response', ->
-
-    # @proxy.intercept
-    #     hostname: @gameHost
-    #     phase: 'response'
-    #     as: 'buffer'
-    #     @handleAppResponse
+      hostname: @gameHost
+      phase: 'response'
+      as: 'buffer'
+      @handleAppResponse
 
   getCertificates: ->
     # Backwards compatibility for installations prior v1.3 (switching to hoxy)
