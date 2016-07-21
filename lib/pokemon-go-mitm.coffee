@@ -67,7 +67,12 @@ class PokemonGoMITM
   handleAppRequest: (req, resp, cycle) =>
     @log "[+++] Request to #{req.hostname}"
 
-    data = POGOProtos.parse req.buffer, @requestEnvelope
+    try
+      data = POGOProtos.parse req.buffer, @requestEnvelope
+    catch e
+      @log "[-] couldn't parse RequestEnvelope.."
+      return
+
     originalData = _.cloneDeep data
 
     for handler in @requestEnvelopeHandlers
@@ -86,9 +91,13 @@ class PokemonGoMITM
         @log "[-] Request handler for #{protoId} isn't implemented yet.."
         continue
 
-      decoded = if request.request_message
-        POGOProtos.parse request.request_message, proto
-      else {}
+      try
+        decoded = if request.request_message
+          POGOProtos.parse request.request_message, proto
+        else {}
+      catch e
+        @log "[-] Couln't parse #{protoId} request.."
+        continue
       
       if overwrite = @handleRequest protoId, decoded
         unless _.isEqual decoded, overwrite
@@ -117,7 +126,12 @@ class PokemonGoMITM
     @log "[+++] Answer from #{req.url}"
     requested = cycle.data 'requested'
 
-    data = POGOProtos.parse resp.buffer, @responseEnvelope
+    try
+      data = POGOProtos.parse resp.buffer, @responseEnvelope
+    catch e
+      @log "[-] Couldn't parse ResponseEnvelope.."
+      return
+
     originalData = _.cloneDeep data
 
     for handler in @responseEnvelopeHandlers
@@ -126,10 +140,14 @@ class PokemonGoMITM
     for id,response of data.returns
       proto = requested[id]
       if proto in POGOProtos.info()
-        decoded = POGOProtos.parse response, proto
-        
         protoId = proto.split(/\./).pop().split(/Response/)[0]
 
+        try
+          decoded = POGOProtos.parse response, proto
+        catch e
+          @log "[-] Couldn't parse #{protoId} response.."
+          continue
+        
         if overwrite = @handleResponse protoId, decoded
           @log "[!] Overwriting "+protoId
           data.returns[id] = POGOProtos.serialize overwrite, proto
