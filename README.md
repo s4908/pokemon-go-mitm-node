@@ -9,7 +9,7 @@ Take a look at the **examples** to get started. Feel happily invited to contribu
 * Get [nodejs](https://nodejs.org/en)
 * Get protobuf >= 3
   * Linux: libprotobuf must be present (`apt-get install libprotobuf-dev`)
-  * OSX: Use [homebrew](http://brew.sh/) to install `protobuf` with `brew install --devel protobuf`
+  * OSX: Use [homebrew](http://brew.sh/) to install protobuf with `brew install --devel protobuf`
   * Windows: hard to compile - follow [advices](https://github.com/fuwaneko/node-protobuf#windows)
 
 * Clone the code to experiment with the examples! (otherwise use it as a [npm package](https://www.npmjs.com/package/pokemon-go-mitm))
@@ -27,7 +27,7 @@ Take a look at the **examples** to get started. Feel happily invited to contribu
 
 `coffee example.logTraffic.coffee`
 
-* Copy the generated `.http-mitm-proxy/certs/ca.pem` to your mobile
+* Copy the generated `cert/ca.pem` to your mobile
 * Add it to the "trusted certificates"
 * Setup your connection to use your machine as a proxy (default port is 8081)
 * Enjoy :)

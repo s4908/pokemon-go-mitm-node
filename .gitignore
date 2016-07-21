@@ -5,6 +5,7 @@ npm-debug.log*
 .DS_Store
 # Certificates
 .http-mitm-proxy
+cert
 
 # Runtime data
 pids

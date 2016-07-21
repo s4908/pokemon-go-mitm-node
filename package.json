@@ -13,10 +13,12 @@
   "author": "Michael Strassburger <codepoet@cpan.org>",
   "license": "MIT",
   "dependencies": {
+    "async": "^2.0.0",
     "change-case": "^3.0.0",
     "coffee-script": "^1.10.0",
-    "http-mitm-proxy": "^0.5.1",
+    "hoxy": "^3.2.0",
     "lodash": "^4.13.1",
+    "node-forge": "^0.6.41",
     "pokemongo-protobuf": "^1.5.0"
   },
   "devDependencies": {
