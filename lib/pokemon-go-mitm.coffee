@@ -149,8 +149,9 @@ class PokemonGoMITM
           continue
         
         if overwrite = @handleResponse protoId, decoded
-          @log "[!] Overwriting "+protoId
-          data.returns[id] = POGOProtos.serialize overwrite, proto
+          unless _.isEqual decoded, overwrite
+            @log "[!] Overwriting "+protoId
+            data.returns[id] = POGOProtos.serialize overwrite, proto
 
       else
         @log "[-] Response handler for #{requested[id]} isn't implemented yet.."
