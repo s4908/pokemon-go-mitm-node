@@ -15,4 +15,5 @@ server = new PokemonGoMITM port: 8081
 		data.name = "Pokemon GO MitM PoC"
 		data.description = "meow!"
 		data.image_urls = ["http://thecatapi.com/api/images/get?format=src&type=png"]
+		console.log data
 		data

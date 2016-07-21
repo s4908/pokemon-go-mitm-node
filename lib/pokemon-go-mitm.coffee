@@ -3,7 +3,6 @@
   by Michael Strassburger <codepoet@cpan.org>
 ###
 
-Proxy = require 'http-mitm-proxy'
 POGOProtos = require 'pokemongo-protobuf'
 changeCase = require 'change-case'
 fs = require 'fs'
@@ -41,15 +40,16 @@ class PokemonGoMITM
     @proxy.log 'error warn debug info', process.stdout
 
     @proxy.intercept
+      hostname: @gameHost
       phase: 'request'
       as: 'buffer'
       @handleAppRequest
     
-    @proxy.intercept phase: 'response', ->
+    @proxy.intercept
       hostname: @gameHost
       phase: 'response'
       as: 'buffer'
-      @handleAppResponse
+      @handleServerResponse
 
   getCertificates: ->
     # Backwards compatibility for installations prior v1.3 (switching to hoxy)
@@ -64,9 +64,8 @@ class PokemonGoMITM
       key: fs.readFileSync 'cert/ca.key'
       cert: fs.readFileSync 'cert/ca.pem'
 
-  handleAppRequest: (req, resp) =>
+  handleAppRequest: (req, resp, cycle) =>
     @log "[+++] Request to #{req.hostname}"
-    return
 
     data = POGOProtos.parse req.buffer, @requestEnvelope
     originalData = _.cloneDeep data
@@ -92,12 +91,13 @@ class PokemonGoMITM
       else {}
       
       if overwrite = @handleRequest protoId, decoded
-        @log "[!] Overwriting "+proto
-        request.request_message = POGOProtos.serialize overwrite, proto
+        unless _.isEqual decoded, overwrite
+          @log "[!] Overwriting "+proto
+          request.request_message = POGOProtos.serialize overwrite, proto
 
     for message in @messageInjectQueue
-      console.log "[+] Injecting request to #{message.action}"
-      console.log message.data if message
+      @log "[+] Injecting request to #{message.action}"
+      @log message.data if message
 
       requested.push "POGOProtos.Networking.Responses.#{message.action}Response"
       data.requests.push
@@ -110,10 +110,13 @@ class PokemonGoMITM
     unless _.isEqual originalData, data
       req.buffer = POGOProtos.serialize data, @requestEnvelope
 
-    req.requested = requested
+    cycle.data 'requested', requested
     @log "[+] Waiting for response..."
 
-  handleAppResponse: (req, resp) ->
+  handleServerResponse: (req, resp, cycle) =>
+    @log "[+++] Answer from #{req.url}"
+    requested = cycle.data 'requested'
+
     data = POGOProtos.parse resp.buffer, @responseEnvelope
     originalData = _.cloneDeep data
 
