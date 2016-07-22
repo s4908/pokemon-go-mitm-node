@@ -15,9 +15,11 @@
   "dependencies": {
     "change-case": "^3.0.0",
     "coffee-script": "^1.10.0",
+    "express": "^4.14.0",
     "http-mitm-proxy": "^0.5.1",
     "lodash": "^4.13.1",
-    "pokemongo-protobuf": "^1.4.0"
+    "pokemongo-protobuf": "^1.5.0",
+    "socket.io": "^1.4.8"
   },
   "devDependencies": {
     "geodesy": "^1.1.0",
